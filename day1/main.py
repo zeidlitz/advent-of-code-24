@@ -1,5 +1,3 @@
-import pdb
-
 with open("input.txt", "r") as file:
     lines = file.readlines()
 
@@ -18,12 +16,9 @@ right_list.sort()
 
 
 for n in range(len(left_list)):
-    left_n = left_list[n]
-    right_n = right_list[n]
-    if (left_n > right_n):
-        distances.append(left_n - right_n)
-    else:
-        distances.append(right_n - left_n)
+    left_number = left_list[n]
+    right_number = right_list[n]
+    distances.append(abs(left_number - right_number))
 
 print("Part 1")
 print("distances        : ", sum(distances))
