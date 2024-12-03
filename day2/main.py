@@ -34,6 +34,8 @@ def is_safe_with_dampener(report):
     return False
 
 
+safe_reports = [report for report in reports if is_safe(report)]
 safe_reports_with_dampener = [report for report in reports if is_safe_with_dampener(report)]
 
+print(f"Number of safe reports              : {len(safe_reports)}")
 print(f"Number of safe reports with dampener: {len(safe_reports_with_dampener)}")
