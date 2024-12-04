@@ -1,6 +1,15 @@
 import re
 
 with open("input.txt", "r") as file:
+    lines = file.readlines()
+
+reports = []
+for line in lines:
+    a = line.strip().split()
+    a = [int(item) for item in a]
+    reports.append(a)
+
+with open("input.txt", "r") as file:
     input_string = file.read()
 
 result = []
