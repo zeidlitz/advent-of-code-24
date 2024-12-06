@@ -1,41 +1,56 @@
+from collections import defaultdict
 import pdb
-import itertools
+
 
 with open("pages.txt", "r") as file:
     lines = file.readlines()
 
-page_map = {}
+pages_txt = []
 for line in lines:
-    a = line.strip().split("|")
-    page_map[int(a[0])] = []
+    pages_txt.append(line)
+    # a = line.strip().split("|")
+    # page_map[int(a[0])] = []
 
-for line in lines:
-    a = line.strip().split("|")
-    page_map[int(a[0])].append(int(a[1]))
+# for line in lines:
+#     a = line.strip().split("|")
+    # page_map[int(a[0])].append(int(a[1]))
 
 with open("updates.txt", "r") as file:
     lines = file.readlines()
 
-updates = []
+updates_txt = []
 for line in lines:
-    a = line.strip().split(",")
-    a = [int(item) for item in a]
-    updates.append(a)
+    updates_txt.append(line)
 
-bad_pages = []
-for update in updates:
-    for i in range(len(update)):
-        for page in page_map[update[i]]:
-            arr = update[i + 1:]
-            pdb.set_trace()
 
-bad_pages.sort()
-bad_pages = list(bad_pages for bad_pages, _ in itertools.groupby(bad_pages))
+def parse_rules(rules):
+    graph = defaultdict(list)
+    for rule in rules:
+        a, b = map(int, rule.split('|'))
+        graph[a].append(b)
+    return graph
 
-print(len(updates))
-for page in bad_pages:
-    updates.remove(page)
-print(len(updates))
+
+def is_valid_update(update, graph):
+    index_map = {page: i for i, page in enumerate(update)}
+    for a in graph:
+        for b in graph[a]:
+            if a in index_map and b in index_map:
+                if index_map[a] > index_map[b]:
+                    continue
+    return update
+
+
+def validate_updates(pages_txt, updates_txt):
+    graph = parse_rules(pages_txt)
+    results = []
+    for update in updates_txt:
+        update_list = list(map(int, update.split(',')))
+        results.append(is_valid_update(update_list, graph))
+    return results
+
+
+correct_updates = validate_updates(pages_txt, updates_txt)
 
 
 def find_middle_element(arr):
@@ -49,9 +64,9 @@ def find_middle_element(arr):
     return middle_element
 
 
-# middle_page_numbers = []
-# for updates in correct_updates:
-#     middle_page = int(find_middle_element(updates))
-#     middle_page_numbers.append(middle_page)
+middle_page_numbers = []
+for updates in correct_updates:
+    middle_page = int(find_middle_element(updates))
+    middle_page_numbers.append(middle_page)
 
-# print(sum(middle_page_numbers))
+print(sum(middle_page_numbers))
