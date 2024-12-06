@@ -1,72 +1,95 @@
-from collections import defaultdict
+import time
+import os
 import pdb
 
 
-with open("pages.txt", "r") as file:
-    lines = file.readlines()
-
-pages_txt = []
-for line in lines:
-    pages_txt.append(line)
-    # a = line.strip().split("|")
-    # page_map[int(a[0])] = []
-
-# for line in lines:
-#     a = line.strip().split("|")
-    # page_map[int(a[0])].append(int(a[1]))
-
-with open("updates.txt", "r") as file:
-    lines = file.readlines()
-
-updates_txt = []
-for line in lines:
-    updates_txt.append(line)
+def get_list_from_file():
+    with open("input.txt", 'r') as file:
+        return file.read().splitlines()
 
 
-def parse_rules(rules):
-    graph = defaultdict(list)
-    for rule in rules:
-        a, b = map(int, rule.split('|'))
-        graph[a].append(b)
-    return graph
+def is_order_valid(instruction, rules):
+    for A, B in rules:
+        if A in instruction and B in instruction:
+            index_a = instruction.index(A)
+            index_b = instruction.index(B)
+            if index_b < index_a:
+                return False
+    return True
 
 
-def is_valid_update(update, graph):
-    index_map = {page: i for i, page in enumerate(update)}
-    for a in graph:
-        for b in graph[a]:
-            if a in index_map and b in index_map:
-                if index_map[a] > index_map[b]:
-                    continue
-    return update
+def find_valid_order(instruction, rules):
+    if len(instruction) == 1:
+        return instruction
+
+    for i in range(len(instruction)):
+        current_instruction = instruction[:i] + instruction[i + 1:]
+        if is_order_valid(current_instruction, rules):
+            ordered = find_valid_order(current_instruction, rules)
+            if ordered is not None:
+                return [instruction[i]] + ordered
+    return None
 
 
-def validate_updates(pages_txt, updates_txt):
-    graph = parse_rules(pages_txt)
-    results = []
-    for update in updates_txt:
-        update_list = list(map(int, update.split(',')))
-        results.append(is_valid_update(update_list, graph))
-    return results
+def sort_me(instruction, rules):
+    i = 0
+    while i != len(instruction):
+        i = len(instruction)
+        for rule in rules:
+            A, B = rule[0], rule[1]
+            if A not in instruction or B not in instruction:
+                continue
+            first_page = instruction.index(A)
+            second_page = instruction.index(B)
+            if first_page > second_page:
+                i -= 1
+                instruction.pop(first_page)
+                instruction.insert(second_page, A)
+
+    return instruction
 
 
-correct_updates = validate_updates(pages_txt, updates_txt)
+def part_one(data_input):
+    count = 0
+    valid_instructions = []
+    data_input = "\n".join(data_input)
+    rules_input, instructions_input = data_input.split("\n\n", 1)
+    rules = [(int(a), int(b)) for a, b in (line.split('|') for line in rules_input.splitlines())]
+    for line in instructions_input.split("\n"):
+        instruction = [int(page) for page in line.split(",")]
+        if is_order_valid(instruction, rules):
+            count += 1
+            valid_instructions.append(line)
+    return sum([int(instruction.split(",")[len(instruction.split(",")) // 2]) for instruction in valid_instructions])
 
 
-def find_middle_element(arr):
-    n = len(arr)
-    middle_index = n // 2
-    if n % 2 != 0:
-        middle_element = arr[middle_index]
-    else:
-        middle_element = (arr[middle_index - 1], arr[middle_index])
+def part_two(data_input):
+    count = 0
+    invalid_instructions = []
+    data_input = "\n".join(data_input)
+    rules_input, instructions_input = data_input.split("\n\n", 1)
+    rules = [(int(a), int(b)) for a, b in (line.split('|') for line in rules_input.splitlines())]
+    for line in instructions_input.split("\n"):
+        instruction = [int(page) for page in line.split(",")]
+        if not is_order_valid(instruction, rules):
+            count += 1
+            invalid_instructions.append(instruction)
+    ordered_instructions = []
+    for instruction in invalid_instructions:
+        ordered_instruction = sort_me(instruction, rules)
+        if ordered_instruction:
+            ordered_instructions.append(ordered_instruction)
 
-    return middle_element
+    return sum([instruction[len(instruction) // 2] for instruction in invalid_instructions])
 
 
-middle_page_numbers = []
-for updates in correct_updates:
-    middle_page = int(find_middle_element(updates))
-    middle_page_numbers.append(middle_page)
+if __name__ == "__main__":
+    t1 = time.time()
 
-print(sum(middle_page_numbers))
+    input_data = get_list_from_file()
+
+    print(f"Part 1 = {part_one(input_data)}")
+    print(f"Part 2 = {part_two(input_data)}")
+
+    t2 = time.time()
+    print(f"Executed in {t2 - t1:0.4f} seconds")
