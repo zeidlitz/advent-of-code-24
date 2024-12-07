@@ -18,7 +18,7 @@ both reside in a directory for the respective day.
 
 the main function will search for input.txt in the same directory, so make sure it's in the leaf of the file
 
-## boilerplate.py
+## boilerplate
 
 The problems usually follow a structure of first needing to do some input parsing and later solving a part one and a part two for the input. The same input is usually for both parts.
 
