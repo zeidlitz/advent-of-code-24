@@ -1,7 +1,7 @@
-# advent-of-code-24
+## advent-of-code-24
 A repository for hosting my advent of code solutions
 
-# structure & assumptions
+## structure & assumptions
 each solution resides in a:
 
 ```bash
@@ -18,7 +18,7 @@ both reside in a directory for the respective day.
 
 the main function will search for input.txt in the same directory, so make sure it's in the leaf of the file
 
-# boilerplate.py
+## boilerplate.py
 
 The problems usually follow a structure of first needing to do some input parsing and later solving a part one and a part two for the input. The same input is usually for both parts.
 
@@ -45,11 +45,11 @@ if __name__ == "__main__":
     print(f"Part 2 = {part_two(input_data)}")
 ```
 
-# testing
+## testing
 
 todo, add some way to do unit testing of certain expectations. Maybe add some assertions or similar things? Maybe pytest or another test framework could be usefull?
 
-# running
+## running
 
 I have been running everything with python3 doing direct interpertation of the source file,
 
