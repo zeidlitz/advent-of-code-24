@@ -1,18 +1,19 @@
 from itertools import product
 
 
-def find_operator_combinations(numbers, target):
+def find_operator_combinations(numbers, target, operators):
     if len(numbers) < 2:
         return 0
-    operators = ['+', '*']
 
     def evaluate_left_to_right(ops, nums):
         result = nums[0]
         for i, op in enumerate(ops):
             if op == '+':
                 result += nums[i + 1]
-            elif op == '*':
+            if op == '*':
                 result *= nums[i + 1]
+            elif op == '|':
+                result = int(str(result) + str(nums[i + 1]))
         return result
 
     for ops in product(operators, repeat=len(numbers) - 1):
@@ -35,15 +36,21 @@ def get_list_from_file():
 
 
 def part_one(input_data):
+    operators = ['+', '*']
     result = []
     for k in input_data:
-        result.append(find_operator_combinations(input_data[k], k))
+        result.append(find_operator_combinations(input_data[k], k, operators))
     result = [i for i in result if i != 0]
     return sum(result)
 
 
 def part_two(input_data):
-    return 0
+    operators = ['+', '*', '|']
+    result = []
+    for k in input_data:
+        result.append(find_operator_combinations(input_data[k], k, operators))
+    result = [i for i in result if i != 0]
+    return sum(result)
 
 
 if __name__ == "__main__":
