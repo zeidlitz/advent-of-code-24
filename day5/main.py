@@ -1,6 +1,4 @@
 import time
-import os
-import pdb
 
 
 def get_list_from_file():
