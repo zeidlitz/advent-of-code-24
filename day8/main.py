@@ -9,9 +9,9 @@ def parse_input():
 
 
 def is_within_bounds(r, c, rows, columns):
-    if r < 0 or r > rows:
+    if r < 0 or r >= rows:
         return False
-    if c < 0 or c > columns:
+    if c < 0 or c >= columns:
         return False
     return True
 
@@ -61,6 +61,8 @@ def part_one(input_data):
     antenna_grid = input_data
     result = find_row_column_differences(antenna_grid)
     result = list(set(result))
+    for s in result:
+        print(s)
     return len(result)
 
 
@@ -83,4 +85,6 @@ if __name__ == "__main__":
 uncertainties:
 - two different frequencies can occour at the same place?
 - we should probably not count frequencies of same type in same place?
+
+first try: 312 too high
 """
