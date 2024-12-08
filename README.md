@@ -55,9 +55,9 @@ def test_solution(func, input_data, result):
 
 if __name__ == "__main__":
     input_data = parse_input()
-    test_solution(part_one, "example_part_one.txt", 0)
+    test_solution(part_one, "example.txt", 0)
     print(f"Part 1 = {part_one(input_data)}")
-    test_solution(part_two, "example_part_two.txt", 0)
+    test_solution(part_two, "example.txt", 0)
     print(f"Part 2 = {part_two(input_data)}")
 ```
 
@@ -70,6 +70,10 @@ example_part_{one/two}.txt
 ```
 
 the test functions will require the user to send the expected output for these. Since the examples for each problem comes with a expected result this is a very good way to run the basic case and establish the base functionallity before attempting the personalized input. Right now they need to be updated in the source with the expected results.
+
+## setup_day.sh
+
+this is a very simple nice-to-have helper for setting up all expected entrypoints and directories for a given day / problem
 
 ## running
 
