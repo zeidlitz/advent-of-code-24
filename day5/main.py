@@ -1,8 +1,5 @@
-import time
-
-
-def get_list_from_file():
-    with open("input.txt", 'r') as file:
+def parse_input(input_file="input.txt"):
+    with open(input_file, 'r') as file:
         return file.read().splitlines()
 
 
@@ -43,7 +40,6 @@ def sort_me(instruction, rules):
                 i -= 1
                 instruction.pop(first_page)
                 instruction.insert(second_page, A)
-
     return instruction
 
 
@@ -77,17 +73,26 @@ def part_two(data_input):
         ordered_instruction = sort_me(instruction, rules)
         if ordered_instruction:
             ordered_instructions.append(ordered_instruction)
-
     return sum([instruction[len(instruction) // 2] for instruction in invalid_instructions])
 
 
+def test_solution(func, input_data, result):
+    GREEN = "\033[92m"
+    RED = "\033[91m"
+    RESET = "\033[0m"
+    example_input_data = parse_input(input_data)
+    expected_output = result
+    actual_output = func(example_input_data)
+
+    if actual_output == expected_output:
+        print(f"Test for {func.__name__} - {GREEN}PASSED{RESET}: expected {actual_output}, got {actual_output}")
+    else:
+        print(f"Test for {func.__name__} - {RED}FAILED{RESET}: expected {expected_output}, got {actual_output}")
+
+
 if __name__ == "__main__":
-    t1 = time.time()
-
-    input_data = get_list_from_file()
-
+    input_data = parse_input()
+    test_solution(part_one, "example.txt", 143)
     print(f"Part 1 = {part_one(input_data)}")
+    test_solution(part_two, "example.txt", 123)
     print(f"Part 2 = {part_two(input_data)}")
-
-    t2 = time.time()
-    print(f"Executed in {t2 - t1:0.4f} seconds")

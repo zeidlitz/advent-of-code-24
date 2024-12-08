@@ -134,7 +134,7 @@ def test_solution(func, input_data, result):
 
 if __name__ == "__main__":
     input_data = parse_input()
-    test_solution(part_one, "example_part_one.txt", 14)
+    test_solution(part_one, "example.txt", 14)
     print(f"Part 1 = {part_one(input_data)}")
-    test_solution(part_two, "example_part_two.txt", 10)
+    test_solution(part_two, "example.txt", 34)
     print(f"Part 2 = {part_two(input_data)}")
