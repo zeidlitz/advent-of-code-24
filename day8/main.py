@@ -1,5 +1,3 @@
-import sys
-
 def parse_input(input_file="input.txt"):
     with open(input_file, 'r') as file:
         grid = []
@@ -120,37 +118,23 @@ def part_two(input_data):
     return len(antennas) + len(result)
 
 
-def test_part_one(num):
+def test_solution(func, input_data, result):
     GREEN = "\033[92m"
     RED = "\033[91m"
     RESET = "\033[0m"
-    example_input_data = parse_input("example_part_one.txt")
-    expected_output = num
-    actual_output = part_one(example_input_data)
+    example_input_data = parse_input(input_data)
+    expected_output = result
+    actual_output = func(example_input_data)
 
     if actual_output == expected_output:
-        print(f"Test for part I : {GREEN}PASSED{RESET}")
+        print(f"Test for {func.__name__} - {GREEN}PASSED{RESET}: expected {actual_output}, got {actual_output}")
     else:
-        print(f"Test for part I : {RED}FAILED: expected {expected_output}, got {actual_output}{RESET}")
-
-
-def test_part_two(num):
-    GREEN = "\033[92m"
-    RED = "\033[91m"
-    RESET = "\033[0m"
-    example_input_data = parse_input("example_part_two.txt")
-    expected_output = num
-    actual_output = part_two(example_input_data)
-
-    if actual_output == expected_output:
-        print(f"Test for part II: {GREEN}PASSED{RESET}")
-    else:
-        print(f"Test for part II: {RED}FAILED: expected {expected_output}, got {actual_output}{RESET}")
+        print(f"Test for {func.__name__} - {RED}FAILED{RESET}: expected {expected_output}, got {actual_output}")
 
 
 if __name__ == "__main__":
     input_data = parse_input()
-    test_part_one(14)
+    test_solution(part_one, "example_part_one.txt", 14)
     print(f"Part 1 = {part_one(input_data)}")
-    test_part_two(9)
+    test_solution(part_two, "example_part_two.txt", 10)
     print(f"Part 2 = {part_two(input_data)}")
