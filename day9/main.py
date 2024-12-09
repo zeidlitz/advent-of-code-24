@@ -1,4 +1,5 @@
 import pdb
+from collections import deque
 
 
 def parse_input(input_data="input.txt"):
@@ -39,46 +40,57 @@ def left_shift_file_blocks(array):
     return array
 
 
-def insert_data_block(memory_array, data, start_index, end_index):
-    memory_array[start_index:end_index] = data
-    return memory_array
+def queue_data_files(array):
+    queue = deque()
+    current_group = []
+    start_index = 0
+
+    for i, num in enumerate(array):
+        if not current_group or num == current_group[-1]:
+            current_group.append(num)
+        else:
+            queue.append((current_group, [start_index, i - 1]))
+            current_group = [num]
+            start_index = i
+    if current_group:
+        queue.append((current_group, [start_index, len(array) - 1]))
+    return queue
 
 
-def insert_data_blocks(memory_array, data):
-    data_size = len(data)
-    available_memory = 1
-    for i in range(len(memory_array)):
-        end_index = i + 1
-        if (memory_array[i] == '.'):
-            try:
-                while (memory_array[i] == memory_array[end_index]):
-                    available_memory += 1
-                    end_index += 1
+def place_data_in_memory_array(data_queue, memory_array):
+    while data_queue:
+        q = data_queue.popleft()
+        data = q[0]
+        indicies = q[1]
+        data_size = len(data)
+        for i in range(len(memory_array)):
+            end_index = i + 1
+            if (memory_array[i] == '.'):
+                available_memory = 1
+                try:
+                    while (memory_array[i] == memory_array[end_index]):
+                        available_memory += 1
+                        end_index += 1
                     if available_memory == data_size:
-                        print("inserting :", data)
-                        memory_array = insert_data_block(memory_array, data, i, end_index)
-            except IndexError:
-                break
+                        print("place data  : ", data)
+                        print("place in : ", i, ":", end_index)
+                        print("remove from    : ", indicies[0], ":", indicies[1])
+                        print()
+                        pdb.set_trace()
+                except IndexError:
+                    break
     return memory_array
 
 
 def left_shift_files(memory_array):
-    data_array = memory_array[::-1]
+    # data_array = memory_array[::-1]
+    data_array = memory_array
     data_array = [x for x in data_array if x != '.']
-    data_size = 1
-    for i in range(len(data_array)):
-        end_index = i + 1
-        try:
-            pdb.set_trace()
-            while (data_array[i] == data_array[end_index]):
-                end_index += 1
-                data_size += 1
-            data = data_array[i:end_index]
-            del data_array[i:end_index]
-            memory_array = insert_data_blocks(memory_array, data)
-        except IndexError:
-            break
-    return memory_array
+    data_queue = queue_data_files(data_array)
+    data_queue.pop()
+    print("memory_array :", memory_array)
+    result = place_data_in_memory_array(data_queue, memory_array)
+    return result
 
 
 def find_checksum(arr):
