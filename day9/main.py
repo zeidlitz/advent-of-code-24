@@ -57,9 +57,13 @@ def queue_data_files(array):
     return queue
 
 
+def insert_data_block(data, memory_array, insert_index_start, insert_index_end, remove_index_start, remove_index_end):
+    pdb.set_trace()
+
+
 def place_data_in_memory_array(data_queue, memory_array):
     while data_queue:
-        q = data_queue.popleft()
+        q = data_queue.pop()
         data = q[0]
         indicies = q[1]
         data_size = len(data)
@@ -71,12 +75,11 @@ def place_data_in_memory_array(data_queue, memory_array):
                     while (memory_array[i] == memory_array[end_index]):
                         available_memory += 1
                         end_index += 1
-                    if available_memory == data_size:
-                        print("place data  : ", data)
-                        print("place in : ", i, ":", end_index)
-                        print("remove from    : ", indicies[0], ":", indicies[1])
-                        print()
-                        pdb.set_trace()
+                        if available_memory == data_size:
+                            print("place data  : ", data)
+                            print("place in : ", i, ":", end_index)
+                            print("remove from    : ", indicies[0], ":", indicies[1])
+                            print()
                 except IndexError:
                     break
     return memory_array
@@ -87,7 +90,7 @@ def left_shift_files(memory_array):
     data_array = memory_array
     data_array = [x for x in data_array if x != '.']
     data_queue = queue_data_files(data_array)
-    data_queue.pop()
+    data_queue.popleft()
     print("memory_array :", memory_array)
     result = place_data_in_memory_array(data_queue, memory_array)
     return result
