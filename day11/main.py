@@ -1,6 +1,4 @@
 from itertools import chain
-from concurrent.futures import ThreadPoolExecutor
-
 
 def parse_input(input_data="input.txt"):
     res = []
@@ -11,55 +9,36 @@ def parse_input(input_data="input.txt"):
         res = [int(item) for item in res]
     return res
 
+def evaluate_stone(input_data, stone, t):
+    if (stone,t) in input_data:
+        return input_data[(stone,t)]
+    if t==0:
+        ret = 1
+    elif stone==0:
+        ret = evaluate_stone(1, t-1)
+    elif len(str(stone))%2==0:
+        dstr = str(stone)
+        left = dstr[:len(dstr)//2]
+        right = dstr[len(dstr)//2:]
+        left, right = (int(left), int(right))
+        ret = evaluate_stone(input_data, left, t-1) + evaluate_stone(input_data, right, t-1)
+    else:
+        ret = evaluate_stone(input_data, stone*2024, t-1)
+    input_data[(stone,t)] = ret
+    return ret
 
-def evaluate_stone(stone):
-    if stone == 0:
-        return [1]
-    stone_str = str(stone)
-    if len(stone_str) % 2 == 0:
-        mid = len(stone_str) // 2
-        left = int(stone_str[:mid])
-        right = int(stone_str[mid:])
-        return [left, right]
-    return [stone * 2024]
+def evaluate_stones(input_data, iteration):
+    return sum(evaluate_stone(input_data, stone, iteration) for stone in input_data)
 
-
-def evaluate_stones(stones):
-    res = []
-    for stone in stones:
-        res.append(evaluate_stone(stone))
-    return res
 
 
 def part_one(input_data):
-    for i in range(25):
-        input_data = evaluate_stones(input_data)
-        input_data = list(chain.from_iterable([item] if not isinstance(item, list) else item for item in input_data))
-    return len(input_data)
+    input_data = parse_input()
+    return sum(evaluate_stones(input_data,25))
 
-
-def part_two(input_data):
-    def process_half(data):
-        return list(chain.from_iterable(
-            [item] if not isinstance(item, list) else item for item in evaluate_stones(data)
-        ))
-
-    for i in range(75):
-        print("Iteration :", i)
-        mid = len(input_data) // 2
-        first_half = input_data[:mid]
-        second_half = input_data[mid:]
-
-        with ThreadPoolExecutor() as executor:
-            future_first = executor.submit(process_half, first_half)
-            future_second = executor.submit(process_half, second_half)
-
-            first_half_result = future_first.result()
-            second_half_result = future_second.result()
-
-        input_data = first_half_result + second_half_result
-
-    return len(input_data)
+def part_one(input_data):
+    input_data = parse_input()
+    return sum(evaluate_stones(input_data,75))
 
 
 def test_solution(func, input_data, result):
