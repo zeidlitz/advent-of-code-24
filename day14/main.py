@@ -35,7 +35,9 @@ def find_quadrants(width, height, positions):
         "bottom_right": 0
     }
 
-    for x, y in positions:
+    for p, v in positions:
+        x = p[0]
+        y = p[1]
         if x == mid_x or y == mid_y:
             continue
         if x < mid_x and y > mid_y:
@@ -53,16 +55,22 @@ def multiply_quadrants(quadrants):
     return quadrants["top_left"] * quadrants["top_right"] * quadrants["bottom_left"] * quadrants["bottom_right"]
 
 
-def find_positions(w, h, positions):
-    ## SOLVE THIS
-    for p, v in positions:
-        new_p = move(w, h, p, v)
-    return positions
+def find_positions(w, h, positions, iterations):
+    all_positions = []
+    for _ in range(iterations):
+        new_positions = []
+        for p, v in positions:
+            new_pos = move(w, h, p, v)
+            new_positions.append((new_pos, v))
+        all_positions.extend(new_positions)
+        positions = new_positions
+    return all_positions
 
 
 def part_one(input_data, w=101, h=103):
-    positions = find_positions(w, h, input_data)
+    positions = find_positions(w, h, input_data, 100)
     q = find_quadrants(w, h, positions)
+    pdb.set_trace()
     return multiply_quadrants(q)
 
 
