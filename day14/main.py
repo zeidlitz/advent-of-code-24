@@ -21,7 +21,7 @@ def move(w, h, position, velocity):
     vx, vy = velocity
     new_x = (x + vx) % width
     new_y = (y + vy) % height
-    return new_x, new_y
+    return [new_x, new_y]
 
 
 def find_quadrants(width, height, positions):
@@ -53,19 +53,17 @@ def multiply_quadrants(quadrants):
     return quadrants["top_left"] * quadrants["top_right"] * quadrants["bottom_left"] * quadrants["bottom_right"]
 
 
+def find_positions(w, h, positions):
+    ## SOLVE THIS
+    for p, v in positions:
+        new_p = move(w, h, p, v)
+    return positions
+
+
 def part_one(input_data, w=101, h=103):
-    print("input_data : ", len(input_data))
-    positions = input_data
-    new_positions = []
-    for _ in range(100):
-        for p, v in positions:
-            new_position = move(w, h, p, v)
-            new_positions.append((new_position, v))
-            positions = new_positions
-    print("input_data : ", len(input_data))
-    # q = find_quadrants(w, h, positions)
-    # return multiply_quadrants(q)
-    return 0
+    positions = find_positions(w, h, input_data)
+    q = find_quadrants(w, h, positions)
+    return multiply_quadrants(q)
 
 
 def part_two(input_data, w, h):
