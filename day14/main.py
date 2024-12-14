@@ -1,6 +1,3 @@
-import pdb
-
-
 def parse_input(input_data="input.txt"):
     res = []
     with open(input_data, 'r') as file:
@@ -25,8 +22,8 @@ def move(w, h, position, velocity):
 
 
 def find_quadrants(width, height, positions):
-    mid_x = width / 2
-    mid_y = height / 2
+    mid_x = (width // 2)
+    mid_y = (height) // 2
 
     quadrants = {
         "top_left": 0,
@@ -38,15 +35,16 @@ def find_quadrants(width, height, positions):
     for p, v in positions:
         x = p[0]
         y = p[1]
+
         if x == mid_x or y == mid_y:
             continue
-        if x < mid_x and y > mid_y:
+        if x < mid_x and y < mid_y:
             quadrants["top_left"] += 1
-        elif x > mid_x and y > mid_y:
-            quadrants["top_right"] += 1
-        elif x < mid_x and y < mid_y:
-            quadrants["bottom_left"] += 1
         elif x > mid_x and y < mid_y:
+            quadrants["top_right"] += 1
+        elif x < mid_x and y > mid_y:
+            quadrants["bottom_left"] += 1
+        elif x > mid_x and y > mid_y:
             quadrants["bottom_right"] += 1
     return quadrants
 
@@ -56,21 +54,19 @@ def multiply_quadrants(quadrants):
 
 
 def find_positions(w, h, positions, iterations):
-    all_positions = []
     for _ in range(iterations):
         new_positions = []
         for p, v in positions:
             new_pos = move(w, h, p, v)
             new_positions.append((new_pos, v))
-        all_positions.extend(new_positions)
         positions = new_positions
-    return all_positions
+    return positions
 
 
 def part_one(input_data, w=101, h=103):
     positions = find_positions(w, h, input_data, 100)
     q = find_quadrants(w, h, positions)
-    pdb.set_trace()
+    print(q)
     return multiply_quadrants(q)
 
 
