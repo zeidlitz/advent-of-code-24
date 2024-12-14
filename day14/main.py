@@ -63,15 +63,39 @@ def find_positions(w, h, positions, iterations):
     return positions
 
 
+def print_grid(positions, width, height):
+    grid = [["." for _ in range(width)] for _ in range(height)]
+    second = 0
+    for p, v in positions:
+        x = p[0]
+        y = p[1]
+        if 0 <= x < width and 0 <= y < height:
+            grid[y][x] = "#"
+    for row in grid:
+        print("".join(row))
+
+
+def find_positions_and_print_grid(w, h, positions, iterations):
+    for second in range(iterations):
+        new_positions = []
+        for p, v in positions:
+            new_pos = move(w, h, p, v)
+            new_positions.append((new_pos, v))
+        positions = new_positions
+        if (second + 1 == 6398):
+            print_grid(positions, w, h)
+    return positions
+
+
 def part_one(input_data, w=101, h=103):
     positions = find_positions(w, h, input_data, 100)
     q = find_quadrants(w, h, positions)
-    print(q)
     return multiply_quadrants(q)
 
 
-def part_two(input_data, w, h):
-    return 0
+def part_two(input_data, w=101, h=103):
+    find_positions_and_print_grid(w, h, input_data, 7000)
+    return 6398
 
 
 def test_solution(func, input_data, result):
@@ -92,5 +116,5 @@ if __name__ == "__main__":
     input_data = parse_input()
     test_solution(part_one, "example.txt", 12)
     print(f"Part 1 = {part_one(input_data)}")
-    # test_solution(part_two, "example.txt", 0)
-    # print(f"Part 2 = {part_two(input_data)}")
+    test_solution(part_two, "example.txt", 6398)
+    print(f"Part 2 = {part_two(input_data)}")
