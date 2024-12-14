@@ -75,6 +75,11 @@ the test functions will require the user to send the expected output for these. 
 
 this is a very simple nice-to-have helper for setting up all expected entrypoints and directories for a given day / problem
 
+to setup the boilerplate, for example for day10 I would call it like so:
+```bash
+./setup_day.sh 10
+```
+
 ## running
 
 I have been running everything with python3 doing direct interpertation of the source file,
