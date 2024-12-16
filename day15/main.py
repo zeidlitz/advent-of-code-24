@@ -53,41 +53,77 @@ def get_box_pair(pair,r, c):
 
 
 def search_vertically(grid, r, c, dr, dc, boxes):
-    # pdb.set_trace()
     while (grid[r][c] != "#"):
         if grid[r][c] in ["]", "["]:
             boxes.append((r,c))
-            boxes.append(get_box_pair(grid[r][c],r, c))
         if grid[r][c] == ".":
             return True, boxes
-        r, c = r + 2 * dr, c + 2 * dc
-        # r, c = r + dr, c + dc
+        r, c = r + dr, c + dc
+    return False, boxes
 
 
-def search_horisontally(grid, r, c, dr, dc):
-    return 0
+def search_horisontally(grid, r, c, dr, dc, boxes):
+    previous_block = grid[r - dr][c - dc]
+    box_blocks = ["[", "]"]
+
+    boxes.append((r - dr, c - dc))
+    boxes.append((get_box_pair(previous_block, r - dr, c - dc)))
+
+    while (grid[r][c] != "#"):
+
+        pdb.set_trace()
+
+        if previous_block == "[":
+
+            if grid[r][c] in box_blocks:
+                boxes.append((r, c))
+                boxes.append((get_box_pair(grid[r][c], r, c)))
+
+            if grid[r][c + 1] in box_blocks:
+                boxes.append((r, c + 1))
+                boxes.append((get_box_pair(grid[r][c + 1], r, c + 1)))
+
+            if grid[r][c + 1] == "#":
+                return False, boxes
+
+        if previous_block == "]":
+
+            if grid[r][c] in box_blocks:
+                boxes.append((r, c))
+                boxes.append((get_box_pair(grid[r][c], r, c)))
+
+            if grid[r][c + 1] in box_blocks:
+                boxes.append((r, c - 1))
+                boxes.append((get_box_pair(grid[r][c - 1], r, c - 1)))
+
+            if grid[r][c - 1] == "#":
+                return False, boxes
+
+        r, c = r + dr, c + dc
+    return True, boxes
 
 
-# add pair to list of boxes (if [ add the ] pair etc)
-# check connecting spots in direction to move for boxes
-# if more boxes are found, check rule for them
 def can_target_be_moved_expanded(grid, r, c, dr, dc):
-    boxes = [(r, c)]
+    boxes = []
     res = False
     r, c = r + dr, c + dc
     if (dc != 0):
-        pdb.set_trace()
+        boxes.append((r - dr, c - dc))
         res, boxes = search_vertically(grid, r, c, dr, dc, boxes)
+    if (dr != 0):
+        res, boxes = search_horisontally(grid, r, c, dr, dc, boxes)
     return res, boxes
 
 
 def move(grid, source, direction):
+
     directions = {
         "<": (0, -1),
         ">": (0, 1),
         "^": (-1, 0),
         "v": (1, 0)
     }
+
     source_r, source_c = source
     dr, dc = directions[direction]
 
@@ -135,6 +171,7 @@ def move_expanded(grid, source, direction):
     if target == "[" or target == "]":
         can_move, boxes = can_target_be_moved_expanded(grid, target_r, target_c, dr, dc)
         if can_move:
+            boxes = list(reversed(boxes))
             for box in boxes:
                 grid = move_target_to_source(grid, (box[0] + dr, box[1] + dc), box)
             grid = move_target_to_source(grid, (target_r, target_c), source)
