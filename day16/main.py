@@ -9,56 +9,6 @@ DIRECTIONS = {
 }
 
 
-class GridAStar(AStar):
-    def __init__(self, current_node, grid):
-        self.current_node = current_node
-        self.direction = "EAST"
-        self.history = []
-        self.grid = grid
-        self.rows = len(grid)
-        self.cols = len(grid[0])
-
-    def heuristic_cost_estimate(self, current, goal):
-        return abs(current[0] - goal[0]) + abs(current[1] - goal[1])
-
-    def neighbors(self, node):
-        x, y = node
-        neighbor_positions = [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
-        valid_neighbors = [
-            (nx, ny)
-            for nx, ny in neighbor_positions
-            if 0 <= nx < self.rows and 0 <= ny < self.cols and self.grid[nx][ny] == "."
-        ]
-        return valid_neighbors
-
-    def print_grid(self):
-        r = self.current_node[0]
-        c = self.current_node[1]
-        self.grid[r][c] = self.direction[0]
-        for row in self.grid:
-            print("".join(row))
-        print()
-
-    def find_direction(self):
-        # pdb.set_trace()
-        n0 = self.history[-2][0]
-        n1 = self.history[-2][1]
-        return DIRECTIONS[(n0[0] - n1[0], n0[1] - n1[1])]
-
-    def distance_between(self, n1, n2):
-        dr = n1[0] - n2[0]
-        dc = n1[1] - n2[1]
-        self.history.append((n1, n2))
-        new_direction = DIRECTIONS[(dr, dc)]
-        self.print_grid()
-        if self.current_node != n1:
-            self.current_node = n1
-            self.direction = self.find_direction()
-        if new_direction != self.direction:
-            return 100
-        return 1
-
-
 def parse_input(input_data="input.txt"):
     grid = []
     with open(input_data, 'r') as file:
@@ -66,13 +16,6 @@ def parse_input(input_data="input.txt"):
     for line in lines:
         grid.append(list(line.strip()))
     return grid
-
-
-def trace_grid(grid, path):
-    traced_grid = grid
-    for x, y in path:
-        traced_grid[x][y] = " "
-    return traced_grid
 
 
 def locate(grid, target):
@@ -102,11 +45,52 @@ def is_valid(grid, x, y):
     return 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] == '.'
 
 
+def countsegs(segset):
+    ret, points = 0,set()
+    for a, b,c,d in segset:
+        ret += abs(a-c) + abs(b-d) + 1 - ((a, b) in points) - ((c,d) in points)
+        points.update({(a, b),(c,d)})
+    return ret
+
+
+def dijkstra(data, start,end):
+    import heapq
+    from collections import defaultdict
+    dirs = [(1, 0),(0,1),(-1,0),(0,-1)]
+    distances = defaultdict(lambda:(float("inf"), set()))
+    distances[*start, 1] = (0, set())
+    queue = [(0, * start, 1)]
+    while queue:
+        dist, px,py,di = heapq.heappop(queue)
+        _, p_set = distances[(px, py, di)]
+        for ndi in range(-1, 2):
+            dix, diy = dirs[(di + ndi) % 4]
+            npx, npy, ndist = px + dix, py + diy, dist + 1 + 1000 * (ndi != 0)
+            while (data[npx][npy] != "#" and data[npx + diy][npy+dix] == "#" and data[npx-diy][npy-dix] == "#"):
+                npx, npy, ndist = npx + dix, npy + diy, ndist + 1
+
+            nset = p_set | {seg(px, py, npx, npy)}
+
+            if (npx, npy) == end:
+                return (ndist, countsegs(nset))
+
+            if data[npx][npy] != "#":
+                o_dist, o_set = distances[(npx, npy, (di + ndi) % 4)]
+                if o_dist == ndist:
+                    if any((pos not in o_set) for pos in nset):
+                        o_set.update(nset)
+                        heapq.heappush(queue, (ndist,npx,npy,(di + ndi) % 4))
+                elif o_dist > ndist:
+                    distances[(npx, npy, (di + ndi) % 4)] = (ndist, nset)
+                    heapq.heappush(queue, (ndist, npx, npy, (di + ndi) % 4))
+    return distances
+
+
 def part_one(input_data):
     grid = input_data
     start = locate(grid, "S")
     end = locate(grid, "E")
-    astar_solver = GridAStar(start, grid)
+    print(dijkstra(grid, start, end))
     path = list(astar_solver.astar(start, end))
     return compute_score(path)
 
