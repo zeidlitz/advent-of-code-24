@@ -53,6 +53,24 @@ def corrupt_memory(grid, nr_bytes, input_data):
     return new_grid
 
 
+def continiously_corroput_memory(grid, input_data):
+    nr_bytes = 0
+    start = (0, 0)
+    end = (70, 70)
+    for data in input_data:
+        # pdb.set_trace()
+        row = data[1]
+        col = data[0]
+        grid[row][col] = "#"
+        nr_bytes += 1
+        pf = PathFinder(grid)
+        path = pf.astar(start, end)
+        print("nr_bytes : ", nr_bytes, " path : ", len(list(path)))
+        if path is None:
+            return nr_bytes
+    return nr_bytes
+
+
 def part_one(input_data):
     grid = [["." for _ in range(71)] for _ in range(71)]
     print("Before")
@@ -67,7 +85,9 @@ def part_one(input_data):
 
 
 def part_two(input_data):
-    return 0
+    pdb.set_trace()
+    grid = [["." for _ in range(71)] for _ in range(71)]
+    return continiously_corroput_memory(grid, input_data)
 
 
 def test_solution(func, input_data, result):
@@ -87,6 +107,6 @@ def test_solution(func, input_data, result):
 if __name__ == "__main__":
     input_data = parse_input()
     # test_solution(part_one, "example.txt", 22)
-    print(f"Part 1 = {part_one(input_data)}")
+    # print(f"Part 1 = {part_one(input_data)}")
     # test_solution(part_two, "example.txt", 0)
-    # print(f"Part 2 = {part_two(input_data)}")
+    print(f"Part 2 = {part_two(input_data)}")
